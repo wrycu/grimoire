@@ -22,6 +22,9 @@ COPY backend/requirements.txt .
 # Install into a relocatable prefix so we can copy it into the final image
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
+# Prepare runtime directories here (since we can't RUN in the DHI stage)
+RUN mkdir -p /runtime/data /runtime/library
+
 # Stage 3: Runtime (hardened)
 FROM dhi.io/python:3.12
 
@@ -38,8 +41,9 @@ COPY --from=backend-builder /usr/bin/mupdf* /usr/bin/
 COPY backend/ ./backend/
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
-# Create data dirs
-RUN mkdir -p /data /library
+# Copy pre-created dirs into place
+COPY --from=backend-builder /runtime/data /data
+COPY --from=backend-builder /runtime/library /library
 
 ARG APP_VERSION=dev
 ARG COMMIT_HASH="dev"
