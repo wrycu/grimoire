@@ -1,5 +1,5 @@
 # Stage 1: Build frontend
-FROM node:20-alpine AS frontend-builder
+FROM dhi.io/node:20 AS frontend-builder
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm install
@@ -7,7 +7,7 @@ COPY frontend/ ./
 RUN npm run build
 
 # Stage 2: Python app
-FROM python:3.12-slim
+FROM dhi.io/python:3.12
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmupdf-dev \
@@ -24,6 +24,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ ./backend/
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
+# Create data dirs
 RUN mkdir -p /data /library
 
 ARG APP_VERSION=dev
