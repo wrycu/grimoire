@@ -20,7 +20,7 @@ WORKDIR /app
 COPY backend/requirements.txt .
 
 # Install into a relocatable prefix so we can copy it into the final image
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+RUN pip install --no-cache-dir --prefix=/opt/python -r requirements.txt
 
 # Prepare runtime directories here (since we can't RUN in the DHI stage)
 RUN mkdir -p /runtime/data /runtime/library
@@ -31,7 +31,7 @@ FROM dhi.io/python:3.12
 WORKDIR /app
 
 # Python deps
-COPY --from=backend-builder /install /usr/local
+COPY --from=backend-builder /opt/python /opt/python
 
 # MuPDF runtime bits
 COPY --from=backend-builder /usr/bin/mutool /usr/bin/mutool
