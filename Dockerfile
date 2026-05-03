@@ -1,5 +1,5 @@
 # Stage 1: Build frontend
-FROM dhi.io/node:20 AS frontend-builder
+FROM node:20-alpine AS frontend-builder
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm install
